@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=360, height=1650, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>🏦 은행王</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+```
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        width: 360px;
+        height: 1650px;
+        overflow: hidden;
+        font-size: 14px;
+        position: fixed;
+        top: 0;
+        left: 0;
+        line-height: 1.3;
+    }
+
+    .flex { display: flex; }
+    .flex-col { flex-direction: column; }
+    .items-center { align-items: center; }
+    .justify-center { justify-content: center; }
+    .justify-between { justify-content: space-between; }
+    .gap-1 { gap: 0.5rem; }
+    .gap-2 { gap: 0.75rem; }
+
+    .w-full { width: 100%; }
+    .h-full { height: 100%; }
+    .p-1 { padding: 0.5rem; }
+    .p-2 { padding: 0.75rem; }
+    .p-3 { padding: 1rem; }
+    .px-1 { padding-left: 0.5rem; padding-right: 0.5rem; }
+    .px-2 { padding-left: 0.75rem; padding-right: 0.75rem; }
+    .py-1 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+    .py-2 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
+    .py-3 { padding-top: 1rem; padding-bottom: 1rem; }
+    .mb-1 { margin-bottom: 0.5rem; }
+    .mb-2 { margin-bottom: 0.75rem; }
+    .mb-3 { margin-bottom: 1rem; }
+    .mt-1 { margin-top: 0.5rem; }
+    .mt-2 { margin-top: 0.75rem; }
+    .mr-2 { margin-right: 0.75rem; }
+    .ml-2 { margin-left: 0.75rem; }
+
+    .text-xs { font-size: 0.75rem; line-height: 1.2; }
+    .text-sm { font-size: 0.875rem; line-height: 1.3; }
+    .text-base { font-size: 1rem; line-height: 1.4; }
+    .text-lg { font-size: 1.125rem; line-height: 1.4; }
+    .text-xl { font-size: 1.25rem; line-height: 1.5; }
+
+    .font-bold { font-weight: 700; }
+    .font-mono { font-family: ui-monospace, SFMono-Regular, monospace; }
+    .font-medium { font-weight: 500; }
+    .text-center { text-align: center; }
+
+    .text-white { color: white; }
+    .text-gray-600 { color: #4b5563; }
+    .text-gray-700 { color: #374151; }
+    .text-gray-800 { color: #1f2937; }
+    .text-blue-200 { color: #bfdbfe; }
+    .text-blue-300 { color: #93c5fd; }
+    .text-blue-600 { color: #2563eb; }
+    .text-blue-800 { color: #1e40af; }
+    .text-green-300 { color: #86efac; }
+    .text-green-600 { color: #16a34a; }
+    .text-red-300 { color: #fca5a5; }
+    .text-red-600 { color: #dc2626; }
+    .text-yellow-300 { color: #fde047; }
+    .text-yellow-600 { color: #ca8a04; }
+
+    .bg-white { background-color: white; }
+    .bg-gray-100 { background-color: #f3f4f6; }
+    .bg-gray-700 { background-color: #374151; }
+    .bg-gray-800 { background-color: #1f2937; }
+    .bg-gray-900 { background-color: #111827; }
+    .bg-blue-100 { background-color: #dbeafe; }
+    .bg-blue-600 { background-color: #2563eb; }
+    .bg-blue-800 { background-color: #1e40af; }
+    .bg-blue-900 { background-color: #1e3a8a; }
+    .bg-green-100 { background-color: #dcfce7; }
+    .bg-red-50 { background-color: #fef2f2; }
+    .bg-yellow-100 { background-color: #fef3c7; }
+
+    .bg-gradient-start {
+        background: linear-gradient(135deg, #1e3a8a 0%, #7c3aed 50%, #1e40af 100%);
+    }
+    .bg-gradient-bank {
+        background: linear-gradient(180deg, #dbeafe 0%, #bfdbfe 100%);
+    }
+
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        border-radius: 0.375rem;
+        font-weight: 600;
+        cursor: pointer;
+        font-size: 0.75rem;
+        padding: 0.5rem 0.75rem;
+        transition: all 0.2s;
+    }
+    .btn:active { transform: translateY(1px); }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-primary { background-color: #2563eb; color: white; }
+    .btn-secondary { background-color: #6b7280; color: white; }
+
+    .input {
+        width: 100%;
+        padding: 0.5rem;
+        border: 1px solid #d1d5db;
+        border-radius: 0.375rem;
+        font-size: 0.875rem;
+    }
+    .input:focus {
+        outline: none;
+        border-color: #2563eb;
+    }
+
+    .slider {
+        -webkit-appearance: none;
+        width: 100%;
+        height: 1rem;
+        border-radius: 0.375rem;
+        background: #d1d5db;
+        outline: none;
+        cursor: pointer;
+    }
+    .slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        height: 1.25rem;
+        width: 1.25rem;
+        border-radius: 50%;
+        background: #2563eb;
+        cursor: pointer;
+        border: 1px solid #1e40af;
+    }
+
+    .alert {
+        padding: 0.5rem;
+        border-radius: 0.375rem;
+        border-left: 3px solid;
+        margin-bottom: 0.5rem;
+    }
+    .alert-warning {
+        background-color: #fef3c7;
+        border-color: #f59e0b;
+        color: #92400e;
+    }
+    .alert-danger {
+        background-color: #fee2e2;
+        border-color: #ef4444;
+        color: #991b1b;
+    }
+
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.5; }
+    }
+    @keyframes bounce {
+        0%, 20%, 53%, 80%, 100% { transform: translate3d(0,0,0); }
+        40%, 43% { transform: translate3d(0, -8px, 0); }
+        70% { transform: translate3d(0, -4px, 0); }
+    }
+    .animate-pulse { animation: pulse 2s infinite; }
+    .animate-bounce { animation: bounce 1s infinite; }
+
+    .grid { display: grid; }
+    .grid-cols-3 { grid-template-columns: repeat(3, 1fr); }
+    .grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
+    .border { border: 1px solid #d1d5db; }
+    .border-2 { border: 2px solid; }
+    .border-l-4 { border-left: 4px solid; }
+    .border-t { border-top: 1px solid; }
+    .border-blue-400 { border-color: #60a5fa; }
+    .border-blue-600 { border-color: #2563eb; }
+    .border-gray-300 { border-color: #d1d5db; }
+    .border-gray-500 { border-color: #6b7280; }
+    .border-yellow-600 { border-color: #ca8a04; }
+    .border-green-400 { border-color: #4ade80; }
+    .border-red-400 { border-color: #f87171; }
+    .rounded { border-radius: 0.375rem; }
+    .rounded-lg { border-radius: 0.5rem; }
+    .rounded-full { border-radius: 50%; }
+
+    .absolute { position: absolute; }
+    .relative { position: relative; }
+    .fixed { position: fixed; }
+    .inset-0 { top: 0; right: 0; bottom: 0; left: 0; }
+    .top-0 { top: 0; }
+    .top-1 { top: 0.5rem; }
+    .top-2 { top: 0.75rem; }
+    .bottom-0 { bottom: 0; }
+    .bottom-1 { bottom: 0.5rem; }
+    .bottom-2 { bottom: 0.75rem; }
+    .left-0 { left: 0; }
+    .left-1 { left: 0.5rem; }
+    .left-1\/2 { left: 50%; }
+    .right-1 { right: 0.5rem; }
+    .right-2 { right: 0.75rem; }
+    .transform { transform: translateZ(0); }
+    .-translate-x-1\/2 { transform: translateX(-50%); }
+    .-translate-y-1\/2 { transform: translateY(-50%); }
+
+    .z-10 { z-index: 10; }
+    .z-20 { z-index: 20; }
+    .z-30 { z-index: 30; }
+    .z-50 { z-index: 50; }
+
+    .overflow-hidden { overflow: hidden; }
+    .overflow-y-auto { overflow-y: auto; }
+    .scrollbar-hide {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+    .scrollbar-hide::-webkit-scrollbar {
+        display: none;
+    }
+
+    .flex-1 { flex: 1; }
+    .flex-shrink-0 { flex-shrink: 0; }
+    .bg-opacity-75 { background-color: rgba(0, 0, 0, 0.75); }
+    .hidden { display: none; }
+    .space-y-1 > * + * { margin-top: 0.5rem; }
+    .space-y-2 > * + * { margin-top: 0.75rem; }
+    .space-y-3 > * + * { margin-top: 1rem; }
+    .max-h-full { max-height: 100%; }
+</style>
+```
+
+</head>
+<body>
+    <div id="app"></div>
+
+```
+<script>
+    let gameState = {
+        bankName: "",
+        initialCapital: 50000000000,
+        currentCapital: 50000000000,
+        totalProfit: 0,
+        depositRate: 2.5,
+        depositCustomers: 100,
+        avgDepositAmount: 50000000,
+        totalDepositBalance: 5000000000,
+        assetYield: 3.5,
+        loanRate: 5.0,
+        loanCustomers: 50,
+        avgLoanAmount: 100000000,
+        totalLoanBalance: 5000000000,
+        defaultRate: 0.05,
+        advertising: 1000000,
+        round: 1,
+        year: 1,
+        month: 1,
+        currentTime: 9,
+        isBusinessHours: true,
+        dayEnded: false,
+        gameStarted: false
+    };
+
+    let uiState = {
+        currentEvent: null,
+        marketReactions: [],
+        showDayEndPopup: false,
+        customers: [],
+        tellerBusy: [false, false, false],
+        dayResults: null,
+        showInputModal: false,
+        inputType: '',
+        inputValue: '',
+        inputLabel: ''
+    };
+
+    let gameTimer = null;
+    let customerTimer = null;
+
+    function formatCurrency(amount) {
+        if (amount >= 1000000000000) {
+            return (amount / 1000000000000).toFixed(1) + '조';
+        } else if (amount >= 100000000) {
+            return (amount / 100000000).toFixed(0) + '억';
+        } else if (amount >= 10000) {
+            return (amount / 10000).toFixed(0) + '만';
+        }
+        return Math.round(amount / 1000) + '천';
+    }
+
+    function formatTime(time) {
+        const hour = Math.floor(time);
+        const minute = Math.round((time % 1) * 60);
+        return hour.toString().padStart(2, '0') + ':' + minute.toString().padStart(2, '0');
+    }
+
+    const marketEvents = [
+        { name: "경기 호황", effect: "고객 수 +25%", multiplier: 1.25, yieldBonus: 0.5, defaultChange: -0.3 },
+        { name: "경기 침체", effect: "고객 수 -20%", multiplier: 0.8, yieldBonus: -0.3, defaultChange: 0.6 },
+        { name: "금리 인상", effect: "예금↑ 대출↓", depositMultiplier: 1.2, loanMultiplier: 0.85, defaultChange: 0.2 },
+        { name: "부동산 호황", effect: "대출 수요 +40%", loanMultiplier: 1.4, defaultChange: -0.1 },
+        { name: "안정적 시장", effect: "변화 없음", multiplier: 1.0, defaultChange: 0 }
+    ];
+
+    function generateMarketReactions(depositRate, loanRate, bankName) {
+        const reactions = [];
+        if (depositRate >= 3.3) {
+            reactions.push({ 
+                type: 'positive', 
+                icon: '😊', 
+                message: depositRate + '% 좋네요!' 
+            });
+        } else if (depositRate < 2.3) {
+            reactions.push({ 
+                type: 'negative', 
+                icon: '😞', 
+                message: depositRate + '%는 너무 낮아요' 
+            });
+        }
+        return reactions.slice(0, 1);
+    }
+
+    function calculateDayResults() {
+        const event = marketEvents[Math.floor(Math.random() * marketEvents.length)];
+        uiState.currentEvent = event;
+
+        const adEffect = Math.min(gameState.advertising / 1000000, 3);
+        const baseDepositCustomers = Math.max(10, 100 - (gameState.depositRate - 2.8) * (-30) + adEffect * 15);
+        const newDepositCustomers = Math.floor(baseDepositCustomers * (event.depositMultiplier || event.multiplier || 1));
+        const newTotalDepositBalance = newDepositCustomers * gameState.avgDepositAmount;
+
+        const baseLoanCustomers = Math.max(5, 80 - (gameState.loanRate - 5.2) * 20 + adEffect * 10);
+        const newLoanCustomers = Math.floor(baseLoanCustomers * (event.loanMultiplier || event.multiplier || 1));
+        const newLoanExecuted = newLoanCustomers * gameState.avgLoanAmount;
+
+        const actualLoanExecuted = gameState.currentCapital >= newLoanExecuted ? newLoanExecuted : gameState.currentCapital;
+        const actualNewLoanCustomers = actualLoanExecuted / gameState.avgLoanAmount;
+        const newTotalLoanBalance = gameState.totalLoanBalance + actualLoanExecuted;
+
+        const adjustedDefaultRate = Math.max(0.01, Math.min(0.25, (gameState.defaultRate + Math.random() * 0.1 - 0.05) * (1 + (event.defaultChange || 0))));
+
+        const depositInterestCost = newTotalDepositBalance * (gameState.depositRate / 100);
+        const assetOperationIncome = newTotalDepositBalance * ((gameState.assetYield + (event.yieldBonus || 0)) / 100);
+        const loanInterestIncome = newTotalLoanBalance * (gameState.loanRate / 100);
+        const defaultLoss = newTotalLoanBalance * adjustedDefaultRate;
+        const operatingCost = (gameState.initialCapital * 0.015) + gameState.advertising;
+
+        const netIncome = assetOperationIncome + loanInterestIncome - depositInterestCost - defaultLoss - operatingCost;
+
+        return {
+            event: event,
+            depositCustomers: newDepositCustomers,
+            totalDepositBalance: newTotalDepositBalance,
+            depositInterestCost: depositInterestCost,
+            assetOperationIncome: assetOperationIncome,
+            loanCustomers: actualNewLoanCustomers,
+            newLoanExecuted: actualLoanExecuted,
+            totalLoanBalance: newTotalLoanBalance,
+            loanInterestIncome: loanInterestIncome,
+            defaultLoss: defaultLoss,
+            newCurrentCapital: Math.max(0, gameState.currentCapital - actualLoanExecuted),
+            operatingCost: operatingCost,
+            netIncome: netIncome,
+            capitalShortage: newLoanExecuted > gameState.currentCapital
+        };
+    }
+
+    function processDay() {
+        const results = calculateDayResults();
+        uiState.dayResults = results;
+
+        const nextMonth = gameState.month === 12 ? 1 : gameState.month + 1;
+        const nextYear = gameState.month === 12 ? gameState.year + 1 : gameState.year;
+
+        gameState.depositCustomers = results.depositCustomers;
+        gameState.loanCustomers = results.loanCustomers;
+        gameState.totalDepositBalance = results.totalDepositBalance;
+        gameState.totalLoanBalance = results.totalLoanBalance;
+        gameState.currentCapital = results.newCurrentCapital;
+        gameState.totalProfit += results.netIncome;
+        gameState.defaultRate = results.defaultRate || gameState.defaultRate;
+        gameState.round += 1;
+        gameState.month = nextMonth;
+        gameState.year = nextYear;
+        gameState.currentTime = 9;
+        gameState.isBusinessHours = true;
+        gameState.dayEnded = false;
+
+        uiState.marketReactions = generateMarketReactions(gameState.depositRate, gameState.loanRate, gameState.bankName);
+        uiState.showDayEndPopup = false;
+
+        startTimers();
+        render();
+    }
+
+    function startGame() {
+        gameState.gameStarted = true;
+        gameState.totalDepositBalance = gameState.depositCustomers * gameState.avgDepositAmount;
+        gameState.totalLoanBalance = gameState.loanCustomers * gameState.avgLoanAmount;
+        startTimers();
+        render();
+    }
+
+    function startTimers() {
+        clearTimers();
+        if (gameState.gameStarted && gameState.isBusinessHours) {
+            gameTimer = setInterval(function() {
+                gameState.currentTime += 0.5;
+                if (gameState.currentTime >= 18) {
+                    gameState.currentTime = 18;
+                    gameState.isBusinessHours = false;
+                    gameState.dayEnded = true;
+                    uiState.showDayEndPopup = true;
+                    clearTimers();
+                    render();
+                }
+                updateTimeDisplay();
+            }, 1000);
+
+            customerTimer = setInterval(function() {
+                if (Math.random() < 0.3) {
+                    const newCustomer = {
+                        id: Date.now() + Math.random(),
+                        type: Math.random() < 0.6 ? 'deposit' : 'loan',
+                        position: -30,
+                        speed: 1 + Math.random() * 2
+                    };
+                    uiState.customers = uiState.customers.slice(-4).concat([newCustomer]);
+                }
+
+                uiState.customers = uiState.customers.map(function(customer) {
+                    return {
+                        id: customer.id,
+                        type: customer.type,
+                        position: customer.position + customer.speed,
+                        speed: customer.speed
+                    };
+                }).filter(function(customer) {
+                    return customer.position < 380;
+                });
+
+                uiState.tellerBusy = uiState.tellerBusy.map(function() {
+                    return Math.random() < 0.2;
+                });
+
+                updateCustomerAnimation();
+            }, 600);
+        }
+    }
+
+    function advanceTime() {
+        if (gameState.gameStarted && gameState.isBusinessHours) {
+            gameState.currentTime += 1;
+            if (gameState.currentTime >= 18) {
+                gameState.currentTime = 18;
+                gameState.isBusinessHours = false;
+                gameState.dayEnded = true;
+                uiState.showDayEndPopup = true;
+                clearTimers();
+            }
+            updateTimeDisplay();
+            render();
+        }
+    }
+
+    function clearTimers() {
+        if (gameTimer) { 
+            clearInterval(gameTimer); 
+            gameTimer = null; 
+        }
+        if (customerTimer) { 
+            clearInterval(customerTimer); 
+            customerTimer = null; 
+        }
+    }
+
+    function updateTimeDisplay() {
+        const timeEl = document.getElementById('current-time');
+        if (timeEl) {
+            timeEl.textContent = '🕐 ' + formatTime(gameState.currentTime);
+            if (gameState.currentTime >= 17.5) {
+                timeEl.className = 'font-mono text-red-300 animate-pulse text-sm';
+            } else if (gameState.currentTime >= 17) {
+                timeEl.className = 'font-mono text-yellow-300 text-sm';
+            } else {
+                timeEl.className = 'font-mono text-green-300 text-sm';
+            }
+        }
+        updateWallClock();
+    }
+
+    function updateWallClock() {
+        const hour = gameState.currentTime % 12;
+        const minute = (gameState.currentTime % 1) * 60;
+        const hourAngle = (hour * 30) + (minute * 0.5);
+        const minuteAngle = minute * 6;
+
+        const hourHand = document.getElementById('hour-hand');
+        const minuteHand = document.getElementById('minute-hand');
+
+        if (hourHand) {
+            hourHand.style.transform = 'translate(-50%, -100%) rotate(' + hourAngle + 'deg)';
+        }
+        if (minuteHand) {
+            minuteHand.style.transform = 'translate(-50%, -100%) rotate(' + minuteAngle + 'deg)';
+        }
+    }
+
+    function updateCustomerAnimation() {
+        const customerArea = document.getElementById('customer-area');
+        if (!customerArea) return;
+
+        customerArea.innerHTML = '';
+        
+        uiState.customers.forEach(function(customer) {
+            const customerEl = document.createElement('div');
+            customerEl.className = 'absolute';
+            customerEl.style.left = customer.position + 'px';
+            customerEl.style.bottom = '0px';
+            customerEl.style.fontSize = '16px';
+            customerEl.innerHTML = customer.type === 'deposit' ? '👨‍💼' : '👩‍💼';
+            customerArea.appendChild(customerEl);
+        });
+
+        for (let i = 0; i < 3; i++) {
+            const tellerEl = document.getElementById('teller-' + i);
+            if (tellerEl) {
+                tellerEl.className = 'absolute left-1/2 -translate-x-1/2 ' + 
+                    (uiState.tellerBusy[i] ? 'animate-bounce' : '');
+            }
+        }
+    }
+
+    function openInputModal(type, currentValue, label) {
+        uiState.inputType = type;
+        uiState.inputValue = currentValue.toString();
+        uiState.inputLabel = label;
+        uiState.showInputModal = true;
+        render();
+        
+        setTimeout(function() {
+            const input = document.getElementById('modal-input');
+            if (input) input.focus();
+        }, 100);
+    }
+
+    function closeInputModal() {
+        uiState.showInputModal = false;
+        render();
+    }
+
+    function applyInputValue() {
+        const numValue = parseFloat(uiState.inputValue);
+        if (isNaN(numValue)) return;
+
+        let newValue = numValue;
+        switch (uiState.inputType) {
+            case 'depositRate':
+                newValue = Math.max(1, Math.min(5, numValue));
+                gameState.depositRate = newValue;
+                break;
+            case 'loanRate':
+                newValue = Math.max(3, Math.min(10, numValue));
+                gameState.loanRate = newValue;
+                break;
+            case 'advertising':
+                newValue = Math.max(0, Math.min(5000000, numValue));
+                gameState.advertising = Math.round(newValue);
+                break;
+        }
+        closeInputModal();
+    }
+
+    function createSlider(id, label, value, min, max, step, unit, type) {
+        function formatValue(val) {
+            if (unit === '원') return formatCurrency(val);
+            return val + unit;
+        }
+
+        return '<div class="bg-gray-100 p-3 rounded-lg mb-2">' +
+            '<div class="flex justify-between items-center mb-2">' +
+                '<label class="font-bold text-gray-800 text-sm">' + label + '</label>' +
+                '<div class="flex items-center gap-2">' +
+                    '<span class="font-mono font-bold text-blue-600 text-sm" id="' + id + '-value">' +
+                        formatValue(value) +
+                    '</span>' +
+                    '<button onclick="openInputModal(\'' + type + '\', ' + value + ', \'' + label + '\')" ' +
+                            'class="btn btn-secondary text-xs px-2 py-1">' +
+                        '직접입력' +
+                    '</button>' +
+                '</div>' +
+            '</div>' +
+            '<input type="range" id="' + id + '" min="' + min + '" max="' + max + '" step="' + step + '" value="' + value + '" ' +
+                   'class="slider w-full" onchange="updateSliderValue(\'' + id + '\', \'' + type + '\', \'' + unit + '\')"/>' +
+            '<div class="flex justify-between text-xs text-gray-600 mt-1">' +
+                '<span>' + min + unit + '</span>' +
+                '<span>' + max + unit + '</span>' +
+            '</div>' +
+        '</div>';
+    }
+
+    function updateSliderValue(id, type, unit) {
+        const slider = document.getElementById(id);
+        const valueDisplay = document.getElementById(id + '-value');
+        
+        if (!slider || !valueDisplay) return;
+        
+        const value = parseFloat(slider.value);
+        
+        switch (type) {
+            case 'depositRate': 
+                gameState.depositRate = value; 
+                break;
+            case 'loanRate': 
+                gameState.loanRate = value; 
+                break;
+            case 'advertising': 
+                gameState.advertising = parseInt(value); 
+                break;
+        }
+        
+        function formatValue(val) {
+            if (unit === '원') return formatCurrency(val);
+            return val + unit;
+        }
+        
+        valueDisplay.textContent = formatValue(value);
+    }
+
+    function render() {
+        const app = document.getElementById('app');
+        
+        if (!gameState.gameStarted) {
+            app.innerHTML = renderStartScreen();
+            return;
+        }
+        
+        app.innerHTML = renderGameScreen();
+        
+        if (uiState.showDayEndPopup) {
+            app.insertAdjacentHTML('beforeend', renderDayEndPopup());
+        }
+        
+        if (uiState.showInputModal) {
+            app.insertAdjacentHTML('beforeend', renderInputModal());
+        }
+        
+        updateTimeDisplay();
+        updateCustomerAnimation();
+    }
+
+    function renderStartScreen() {
+        return '<div class="bg-gradient-start p-3 h-full">' +
+            '<div class="text-center mb-3">' +
+                '<h1 class="text-xl font-bold text-white mb-2">🏦 은행王</h1>' +
+                '<p class="text-base text-blue-200">현실적인 은행 경영 시뮬레이션</p>' +
+                '<p class="text-sm text-blue-300 mt-2">💰 수신→운용수익 | 💸 여신→이자수익</p>' +
+            '</div>' +
+            '<div class="bg-gray-900 border-2 border-blue-400 rounded-lg p-3">' +
+                '<div class="mb-3">' +
+                    '<label class="block text-blue-300 font-bold mb-2 text-sm">🏛️ 은행 이름:</label>' +
+                    '<input type="text" id="bank-name-input" placeholder="예: 신한, 국민, 하나, 우리..." value="' + gameState.bankName + '"' +
+                           'class="input bg-gray-700 border-gray-600 text-white text-base"' +
+                           'onchange="gameState.bankName = this.value; render();"/>' +
+                '</div>' +
+                '<div class="bg-gray-800 p-3 rounded-lg mb-3">' +
+                    '<h3 class="text-yellow-300 font-bold mb-2 text-sm">🎯 게임 핵심</h3>' +
+                    '<ul class="text-gray-300 text-sm space-y-1">' +
+                        '<li>💰 <strong>수신업무</strong>: 예금 유치 → 자금 운용 (2~5% 수익)</li>' +
+                        '<li>💸 <strong>여신업무</strong>: 자본금으로 대출 → 이자 수익</li>' +
+                        '<li>📊 <strong>목표</strong>: 이자 마진 최적화로 수익 극대화</li>' +
+                        '<li>⚠️ <strong>리스크</strong>: 연체 손실, 자본금 고갈 주의</li>' +
+                    '</ul>' +
+                '</div>' +
+                '<button onclick="startGame()" ' + (gameState.bankName.trim() ? '' : 'disabled') +
+                        ' class="btn ' + (gameState.bankName.trim() ? 'btn-primary' : 'btn-secondary') + ' w-full py-3 text-base">' +
+                    (gameState.bankName.trim() ? '🚀 ' + gameState.bankName + ' 은행 시작!' : '은행 이름을 입력하세요') +
+                '</button>' +
+            '</div>' +
+        '</div>';
+    }
+
+    function renderGameScreen() {
+        return '<div style="height: 1650px; display: flex; flex-direction: column; background: white;">' +
+            '<!-- 상단 바 (80px) -->' +
+            '<div class="bg-gray-800 text-white p-2" style="height: 80px; flex-shrink: 0;">' +
+                '<div class="flex justify-between items-center mb-2">' +
+                    '<div>' +
+                        '<span class="text-sm font-bold">🏦 ' + gameState.bankName + '</span>' +
+                        '<span class="text-sm text-blue-300 ml-2">📅 ' + gameState.year + '년 ' + gameState.month + '월 ' + gameState.round + '일</span>' +
+                    '</div>' +
+                '</div>' +
+                '<div class="flex justify-between items-center">' +
+                    '<div id="current-time" class="font-mono text-sm text-green-300">🕐 ' + formatTime(gameState.currentTime) + '</div>' +
+                    '<div class="text-green-300 font-bold text-sm">💰 ' + formatCurrency(gameState.currentCapital) + '</div>' +
+                    (gameState.isBusinessHours ? 
+                        '<button onclick="advanceTime()" class="btn btn-primary text-sm px-2 py-1">⏰ +1H</button>' :
+                        '<button onclick="uiState.showDayEndPopup = true; render();" class="btn btn-primary text-sm px-2 py-1">🌙 마감</button>'
+                    ) +
+                '</div>' +
+            '</div>' +
+
+            '<!-- 은행 애니메이션 (120px) -->' +
+            '<div class="relative overflow-hidden bg-gradient-bank" style="height: 120px; flex-shrink: 0;">' +
+                '<!-- 벽시계 -->' +
+                '<div class="absolute top-2 left-2">' +
+                    '<div class="bg-white rounded-full border-2 border-yellow-600" style="width: 40px; height: 40px;">' +
+                        '<div class="relative w-full h-full rounded-full bg-white">' +
+                            '<div class="absolute top-1 left-1/2 transform -translate-x-1/2 text-gray-800" style="font-size: 0.6rem; line-height: 1;">12</div>' +
+                            '<div class="absolute top-1/2 right-1 transform -translate-y-1/2 text-gray-800" style="font-size: 0.6rem;">3</div>' +
+                            '<div class="absolute bottom-1 left-1/2 transform -translate-x-1/2 text-gray-800" style="font-size: 0.6rem;">6</div>' +
+                            '<div class="absolute top-1/2 left-1 transform -translate-y-1/2 text-gray-800" style="font-size: 0.6rem;">9</div>' +
+                            '<div class="absolute top-1/2 left-1/2 bg-gray-800 rounded-full transform -translate-x-1/2 -translate-y-1/2 z-30" style="width: 2px; height: 2px;"></div>' +
+                            '<div id="hour-hand" class="absolute top-1/2 left-1/2 bg-gray-800 z-20" style="width: 1px; height: 10px; transform-origin: bottom; transform: translate(-50%, -100%) rotate(0deg);"></div>' +
+                            '<div id="minute-hand" class="absolute top-1/2 left-1/2 bg-gray-600 z-10" style="width: 0.5px; height: 14px; transform-origin: bottom; transform: translate(-50%, -100%) rotate(0deg);"></div>' +
+                        '</div>' +
+                    '</div>' +
+                '</div>' +
+                
+                '<!-- 바닥 -->' +
+                '<div class="absolute bottom-0 w-full bg-gray-400 border-t-2 border-gray-500" style="height: 20px;"></div>' +
+                
+                '<!-- 창구 -->' +
+                '<div class="absolute left-1/2 -translate-x-1/2 flex gap-2" style="bottom: 20px;">' +
+                    [0, 1, 2].map(function(i) {
+                        return '<div class="relative">' +
+                            '<div class="bg-yellow-800 border-2 border-yellow-600 rounded" style="width: 20px; height: 12px;"></div>' +
+                            '<div id="teller-' + i + '" class="absolute left-1/2 -translate-x-1/2 ' + (uiState.tellerBusy[i] ? 'animate-bounce' : '') + '"' +
+                                 ' style="font-size: 12px; top: -16px;">👨‍💼</div>' +
+                            '<div class="absolute left-1/2 -translate-x-1/2 bg-blue-600 text-white rounded font-bold"' +
+                                 ' style="font-size: 0.6rem; bottom: -12px; padding: 2px 4px;">' + (i + 1) + '번</div>' +
+                        '</div>';
+                    }).join('') +
+                '</div>' +
+
+                '<!-- 고객들 -->' +
+                '<div id="customer-area" class="absolute bottom-0 left-0 w-full" style="height: 20px; bottom: 5px;"></div>' +
+
+                '<!-- 은행 간판 -->' +
+                '<div class="absolute top-2 left-1/2 -translate-x-1/2">' +
+                    '<div class="bg-blue-800 text-white rounded-lg border-2 border-blue-600 px-3 py-2">' +
+                        '<h2 class="text-sm font-bold text-center">' + gameState.bankName + ' 은행</h2>' +
+                        '<div class="text-center text-xs text-blue-200">영업시간: 09:00 - 18:00</div>' +
+                    '</div>' +
+                '</div>' +
+
+                '<!-- 금리 안내판 -->' +
+                '<div class="absolute top-2 right-2 bg-white border-2 border-gray-300 rounded-lg p-2" style="font-size: 0.7rem;">' +
+                    '<div class="font-bold text-gray-800 mb-1">💰 금리 안내</div>' +
+                    '<div class="flex justify-between">' +
+                        '<span>예금:</span>' +
+                        '<span class="font-bold text-blue-600">' + gameState.depositRate + '%</span>' +
+                    '</div>' +
+                    '<div class="flex justify-between">' +
+                        '<span>대출:</span>' +
+                        '<span class="font-bold text-green-600">' + gameState.loanRate + '%</span>' +
+                    '</div>' +
+                '</div>' +
+            '</div>' +
+
+            '<!-- 메인 콘텐츠 (1450px) -->' +
+            '<div style="flex: 1; overflow-y: auto; padding: 1rem;" class="scrollbar-hide">' +
+                '<!-- 핵심 지표 -->' +
+                '<div class="mb-3">' +
+                    '<h3 class="text-lg font-bold text-gray-800 mb-2">📊 은행 경영 현황</h3>' +
+                    
+                    '<!-- 자산/부채 현황 -->' +
+                    '<div class="grid grid-cols-3 gap-2 mb-3">' +
+                        '<div class="bg-blue-100 p-3 rounded-lg">' +
+                            '<div class="text-blue-800 font-bold text-sm mb-2">💰 수신 부문</div>' +
+                            '<div class="text-sm space-y-1">' +
+                                '<div class="flex justify-between">' +
+                                    '<span>고객 수:</span>' +
+                                    '<span class="font-bold text-blue-600">' + gameState.depositCustomers + '명</span>' +
+                                '</div>' +
+                                '<div class="flex justify-between">' +
+                                    '<span>총 예금:</span>' +
+                                    '<span class="font-bold text-blue-600">' + formatCurrency(gameState.totalDepositBalance) + '</span>' +
+                                '</div>' +
+                                '<div class="flex justify-between">' +
+                                    '<span>운용수익률:</span>' +
+                                    '<span class="font-bold text-green-600">' + gameState.assetYield + '%</span>' +
+                                '</div>' +
+                            '</div>' +
+                        '</div>' +
+                        
+                        '<div class="bg-green-100 p-3 rounded-lg">' +
+                            '<div class="text-green-800 font-bold text-sm mb-2">💸 여신 부문</div>' +
+                            '<div class="text-sm space-y-1">' +
+                                '<div class="flex justify-between">' +
+                                    '<span>고객 수:</span>' +
+                                    '<span class="font-bold text-green-600">' + gameState.loanCustomers + '명</span>' +
+                                '</div>' +
+                                '<div class="flex justify-between">' +
+                                    '<span>총 대출:</span>' +
+                                    '<span class="font-bold text-green-600">' + formatCurrency(gameState.totalLoanBalance) + '</span>' +
+                                '</div>' +
+                                '<div class="flex justify-between">' +
+                                    '<span>연체율:</span>' +
+                                    '<span class="font-bold text-red-600">' + (gameState.defaultRate * 100).toFixed(2) + '%</span>' +
+                                '</div>' +
+                            '</div>' +
+                        '</div>' +
+
+                        '<div class="bg-yellow-100 p-3 rounded-lg">' +
+                            '<div class="text-yellow-600 font-bold text-sm mb-2">🏦 자본 현황</div>' +
+                            '<div class="text-sm space-y-1">' +
+                                '<div class="flex justify-between">' +
+                                    '<span>가용 자본금:</span>' +
+                                    '<span class="font-bold text-yellow-600">' + formatCurrency(gameState.currentCapital) + '</span>' +
+                                '</div>' +
+                                '<div class="flex justify-between">' +
+                                    '<span>총 수익:</span>' +
+                                    '<span class="font-bold ' + (gameState.totalProfit >= 0 ? 'text-green-600' : 'text-red-600') + '">' +
+                                        formatCurrency(gameState.totalProfit) +
+                                    '</span>' +
+                                '</div>' +
+                                '<div class="flex justify-between">' +
+                                    '<span>이자 마진:</span>' +
+                                    '<span class="font-bold text-blue-600">' + (gameState.loanRate - gameState.depositRate).toFixed(1) + '%p</span>' +
+                                '</div>' +
+                            '</div>' +
+                        '</div>' +
+                    '</div>' +
+
+                    (gameState.currentCapital < gameState.initialCapital * 0.1 ? 
+                        '<div class="alert alert-danger">' +
+                            '<div class="flex items-center">' +
+                                '<span class="mr-2">⚠️</span>' +
+                                '<p class="font-bold text-sm">자본금 부족 경고! 대출 실행이 제한될 수 있습니다.</p>' +
+                            '</div>' +
+                        '</div>'
+                    : '') +
+                '</div>' +
+
+                (uiState.marketReactions.length > 0 ? 
+                    '<div class="mb-3">' +
+                        '<h3 class="text-base font-bold text-gray-800 mb-2">💬 고객 반응</h3>' +
+                        uiState.marketReactions.map(function(reaction) {
+                            return '<div class="p-3 rounded-lg border-l-4 mb-2 ' + 
+                                (reaction.type === 'positive' ? 'bg-green-100 border-green-400' : 'bg-red-50 border-red-400') + '">' +
+                                    '<div class="flex items-center">' +
+                                        '<span class="text-lg mr-2">' + reaction.icon + '</span>' +
+                                        '<p class="text-sm font-medium">' + reaction.message + '</p>' +
+                                    '</div>' +
+                                '</div>';
+                        }).join('') +
+                    '</div>'
+                : '') +
+
+                (uiState.currentEvent ? 
+                    '<div class="alert alert-warning">' +
+                        '<div class="flex items-center">' +
+                            '<span class="mr-2">⚠️</span>' +
+                            '<div>' +
+                                '<h3 class="text-sm font-bold">📰 ' + uiState.currentEvent.name + '</h3>' +
+                                '<p class="text-sm">' + uiState.currentEvent.effect + '</p>' +
+                            '</div>' +
+                        '</div>' +
+                    '</div>'
+                : '') +
+            '</div>' +
+        '</div>';
+    }
+
+    function renderDayEndPopup() {
+        return '<div class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-3">' +
+            '<div class="bg-blue-900 border-2 border-blue-400 rounded-lg p-3 w-full max-h-full overflow-y-auto scrollbar-hide">' +
+                '<div class="text-center mb-3">' +
+                    '<h3 class="text-xl font-bold text-white mb-2">🌙 영업 마감</h3>' +
+                    '<p class="text-blue-200 text-sm">오늘 하루도 수고하셨습니다. 내일 영업을 준비해주세요.</p>' +
+                '</div>' +
+
+                (uiState.dayResults ? 
+                    '<div class="bg-blue-800 p-3 rounded-lg mb-3">' +
+                        '<h4 class="text-blue-200 font-bold mb-2 text-base">📊 오늘의 영업 결과</h4>' +
+                        '<div class="text-sm text-blue-100 space-y-2">' +
+                            '<div class="grid grid-cols-2 gap-2">' +
+                                '<div>📥 예금: ' + Math.round(uiState.dayResults.depositCustomers) + '명</div>' +
+                                '<div>📤 대출: ' + Math.round(uiState.dayResults.loanCustomers) + '명</div>' +
+                            '</div>' +
+                            '<div class="border-t border-blue-600 pt-2">' +
+                                '<div class="text-green-300">💰 수익: ' + formatCurrency(uiState.dayResults.assetOperationIncome + uiState.dayResults.loanInterestIncome) + '</div>' +
+                                '<div class="text-red-300">💸 비용: ' + formatCurrency(uiState.dayResults.depositInterestCost + uiState.dayResults.defaultLoss + uiState.dayResults.operatingCost) + '</div>' +
+                                '<div class="font-bold ' + (uiState.dayResults.netIncome >= 0 ? 'text-green-300' : 'text-red-300') + '">' +
+                                    '📈 순이익: ' + formatCurrency(uiState.dayResults.netIncome) +
+                                '</div>' +
+                            '</div>' +
+                            (uiState.dayResults.capitalShortage ? 
+                                '<div class="text-yellow-300 text-sm mt-2">' +
+                                    '⚠️ 자본금 부족으로 대출 실행이 제한되었습니다' +
+                                '</div>'
+                            : '') +
+                        '</div>' +
+                    '</div>'
+                : '') +
+                
+                '<div class="space-y-3 mb-3">' +
+                    createSlider('deposit-rate-slider', '💰 수신 이자율', gameState.depositRate, 1, 5, 0.1, '%', 'depositRate') +
+                    createSlider('loan-rate-slider', '💸 여신 이자율', gameState.loanRate, 3, 10, 0.1, '%', 'loanRate') +
+                    createSlider('advertising-slider', '📢 광고비', gameState.advertising, 0, 5000000, 100000, '원', 'advertising') +
+                '</div>' +
+
+                '<button onclick="processDay()" class="btn btn-primary w-full py-3 text-base">' +
+                    '🌅 다음 날 영업 시작' +
+                '</button>' +
+            '</div>' +
+        '</div>';
+    }
+
+    function renderInputModal() {
+        return '<div class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-3">' +
+            '<div class="bg-white rounded-lg w-full">' +
+                '<div class="p-3">' +
+                    '<h3 class="text-lg font-bold text-gray-800 mb-2">' + uiState.inputLabel + ' 직접 입력</h3>' +
+                    
+                    '<div class="mb-3">' +
+                        '<label class="block text-sm font-bold text-gray-700 mb-2">새로운 값을 입력하세요</label>' +
+                        '<input type="number" id="modal-input" value="' + uiState.inputValue + '"' +
+                               'onchange="uiState.inputValue = this.value"' +
+                               'onkeypress="if(event.key === \'Enter\') applyInputValue(); if(event.key === \'Escape\') closeInputModal();"' +
+                               'class="input text-base" placeholder="숫자를 입력하세요"/>' +
+                        '<div class="text-sm text-gray-600 mt-2">' +
+                            (uiState.inputType === 'depositRate' ? '범위: 1.0% ~ 5.0%' : '') +
+                            (uiState.inputType === 'loanRate' ? '범위: 3.0% ~ 10.0%' : '') +
+                            (uiState.inputType === 'advertising' ? '범위: 0원 ~ 500만원' : '') +
+                        '</div>' +
+                    '</div>' +
+
+                    '<div class="flex gap-2">' +
+                        '<button onclick="closeInputModal()" class="btn btn-secondary flex-1 text-sm">취소</button>' +
+                        '<button onclick="applyInputValue()" class="btn btn-primary flex-1 text-sm">적용</button>' +
+                    '</div>' +
+                '</div>' +
+            '</div>' +
+        '</div>';
+    }
+
+    function init() {
+        render();
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+</script>
+```
+
+</body>
+</html>
