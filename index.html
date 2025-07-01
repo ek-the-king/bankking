@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>🏦 은행王</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+```
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        width: 100vw; height: 100vh; overflow: hidden; font-size: 16px;
+    }
+
+    .screen { width: 100vw; height: 100vh; display: flex; flex-direction: column; }
+    .header { background: #1f2937; color: white; padding: 1rem; height: 15vh; display: flex; flex-direction: column; justify-content: space-between; }
+    .bank-area { background: linear-gradient(180deg, #dbeafe 0%, #bfdbfe 100%); height: 25vh; position: relative; overflow: hidden; }
+    .content { flex: 1; overflow-y: auto; padding: 1rem; background: white; }
+    
+    .btn { background: #2563eb; color: white; border: none; padding: 0.75rem 1rem; border-radius: 0.5rem; font-weight: 600; cursor: pointer; }
+    .btn:active { transform: translateY(1px); }
+    .btn-secondary { background: #6b7280; }
+    
+    .input { width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; font-size: 1rem; }
+    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; }
+    .card { background: #f3f4f6; padding: 1rem; border-radius: 0.5rem; }
+    
+    .blue { background: #dbeafe; color: #1e40af; }
+    .green { background: #dcfce7; color: #166534; }
+    .yellow { background: #fef3c7; color: #92400e; }
+    
+    .clock { position: absolute; top: 1rem; left: 1rem; width: 60px; height: 60px; background: white; border: 3px solid #ca8a04; border-radius: 50%; }
+    .hand { position: absolute; background: #374151; transform-origin: bottom center; border-radius: 2px; }
+    .hour-hand { width: 2px; height: 15px; top: 50%; left: 50%; transform: translate(-50%, -100%); }
+    .minute-hand { width: 1px; height: 20px; top: 50%; left: 50%; transform: translate(-50%, -100%); }
+    
+    .teller { position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%); display: flex; gap: 1rem; }
+    .teller-booth { width: 40px; height: 25px; background: #92400e; border: 2px solid #451a03; border-radius: 0.25rem; position: relative; }
+    .teller-person { position: absolute; top: -2rem; left: 50%; transform: translateX(-50%); font-size: 20px; }
+    
+    .customers { position: absolute; bottom: 1rem; left: 0; width: 100%; height: 30px; }
+    .customer { position: absolute; bottom: 0; font-size: 18px; }
+    
+    .sign { position: absolute; top: 1rem; left: 50%; transform: translateX(-50%); background: #1e40af; color: white; padding: 0.5rem 1rem; border-radius: 0.5rem; border: 2px solid #1d4ed8; }
+    .rate-board { position: absolute; top: 1rem; right: 1rem; background: white; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 0.5rem; font-size: 0.75rem; }
+    
+    .slider { width: 100%; height: 1.5rem; border-radius: 0.5rem; background: #d1d5db; outline: none; cursor: pointer; -webkit-appearance: none; }
+    .slider::-webkit-slider-thumb { -webkit-appearance: none; height: 2rem; width: 2rem; border-radius: 50%; background: #2563eb; cursor: pointer; border: 2px solid #1e40af; }
+    
+    .modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.75); display: flex; align-items: center; justify-content: center; padding: 1rem; z-index: 50; }
+    .modal-content { background: white; padding: 1.5rem; border-radius: 0.75rem; width: 100%; max-width: 400px; }
+    .popup { background: #1e3a8a; color: white; border: 2px solid #60a5fa; border-radius: 0.75rem; }
+    
+    @keyframes bounce { 0%, 20%, 53%, 80%, 100% { transform: translateX(-50%) translateY(0); } 40%, 43% { transform: translateX(-50%) translateY(-10px); } 70% { transform: translateX(-50%) translateY(-5px); } }
+    .bounce { animation: bounce 1s infinite; }
+    
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+    .pulse { animation: pulse 2s infinite; }
+    
+    .mb-2 { margin-bottom: 0.5rem; } .mb-3 { margin-bottom: 0.75rem; } .mb-4 { margin-bottom: 1rem; }
+    .text-sm { font-size: 0.875rem; } .text-lg { font-size: 1.125rem; } .text-xl { font-size: 1.25rem; }
+    .font-bold { font-weight: 700; } .text-center { text-align: center; }
+    .flex { display: flex; } .justify-between { justify-content: space-between; } .items-center { align-items: center; } .gap-2 { gap: 0.5rem; }
+    .w-full { width: 100%; } .hidden { display: none; }
+</style>
+```
+
+</head>
+<body>
+    <div id="app"></div>
+
+```
+<script>
+    let game = {
+        bankName: "", capital: 50000000000, profit: 0, depositRate: 2.5, loanRate: 5.0,
+        depositCustomers: 100, loanCustomers: 50, depositBalance: 5000000000, loanBalance: 5000000000,
+        advertising: 1000000, round: 1, year: 1, month: 1, time: 9, isOpen: true, started: false,
+        fscWarnings: [], fscWatchList: false, boardPressure: 0, defaultRate: 0.05,
+        capitalRatio: 12.5, badLoanRatio: 2.1, assetYield: 3.5, assetPortfolio: {
+            bonds: 60, stocks: 20, loans: 15, cash: 5  // 자산 배분 비율 (%)
+        },
+        fscSanctions: {
+            rateControl: false,     // 금리 통제
+            loanLimit: false,       // 대출 한도 제한
+            dividendBan: false,     // 배당금지
+            operationSuspend: false // 영업정지
+        },
+        boardActions: {
+            ceoWarning: 0,          // CEO 경고 횟수
+            strategyForced: false,   // 강제 전략 변경
+            budgetCut: false,       // 예산 삭감
+            mergeTalk: false        // 인수합병 논의
+        }
+    };
+
+    let ui = {
+        showDayEnd: false, showInput: false, inputType: '', inputValue: '', inputLabel: '',
+        customers: [], tellerBusy: [false, false, false], dayResult: null, event: null, reactions: [],
+        fscAlert: null, boardAlert: null
+    };
+
+    let timers = { game: null, customer: null };
+
+    function fmt(amount) {
+        if (amount >= 1000000000000) return (amount / 1000000000000).toFixed(1) + '조원';
+        if (amount >= 100000000) return (amount / 100000000).toFixed(0) + '억원';
+        if (amount >= 10000) return (amount / 10000).toFixed(0) + '만원';
+        return Math.round(amount / 1000) + '천원';
+    }
+
+    function fmtTime(time) {
+        const h = Math.floor(time), m = Math.round((time % 1) * 60);
+        return h.toString().padStart(2, '0') + ':' + m.toString().padStart(2, '0');
+    }
+
+    function startGame() { game.started = true; startTimers(); render(); }
+
+    function startTimers() {
+        clearTimers();
+        if (game.started && game.isOpen) {
+            timers.game = setInterval(() => {
+                game.time += 0.3;
+                if (game.time >= 18) { game.time = 18; game.isOpen = false; ui.showDayEnd = true; clearTimers(); render(); }
+                updateTime();
+            }, 1000);
+
+            timers.customer = setInterval(() => {
+                if (Math.random() < 0.4) {
+                    ui.customers.push({ id: Date.now(), type: Math.random() < 0.6 ? 'deposit' : 'loan', pos: -50, speed: 2 + Math.random() * 3 });
+                    if (ui.customers.length > 6) ui.customers.shift();
+                }
+                ui.customers = ui.customers.map(c => ({...c, pos: c.pos + c.speed})).filter(c => c.pos < window.innerWidth + 50);
+                ui.tellerBusy = [Math.random() < 0.3, Math.random() < 0.3, Math.random() < 0.3];
+                updateCustomers();
+            }, 500);
+        }
+    }
+
+    function clearTimers() { if (timers.game) clearInterval(timers.game); if (timers.customer) clearInterval(timers.customer); }
+
+    function advanceTime() {
+        if (game.started && game.isOpen) {
+            game.time += 1;
+            if (game.time >= 18) { game.time = 18; game.isOpen = false; ui.showDayEnd = true; clearTimers(); }
+            updateTime(); render();
+        }
+    }
+
+    function updateTime() {
+        const timeEl = document.getElementById('time');
+        if (timeEl) {
+            timeEl.textContent = '🕐 ' + fmtTime(game.time);
+            timeEl.className = game.time >= 17.5 ? 'text-red-300 pulse' : game.time >= 17 ? 'text-yellow-300' : 'text-green-300';
+        }
+        updateClock();
+    }
+
+    function updateClock() {
+        const hour = game.time % 12, minute = (game.time % 1) * 60;
+        const hourAngle = (hour * 30) + (minute * 0.5), minuteAngle = minute * 6;
+        const hourHand = document.getElementById('hour-hand'), minuteHand = document.getElementById('minute-hand');
+        if (hourHand) hourHand.style.transform = 'translate(-50%, -100%) rotate(' + hourAngle + 'deg)';
+        if (minuteHand) minuteHand.style.transform = 'translate(-50%, -100%) rotate(' + minuteAngle + 'deg)';
+    }
+
+    function updateCustomers() {
+        const area = document.getElementById('customers');
+        if (!area) return;
+        area.innerHTML = '';
+        ui.customers.forEach(customer => {
+            const el = document.createElement('div');
+            el.className = 'customer'; el.style.left = customer.pos + 'px';
+            el.innerHTML = customer.type === 'deposit' ? '👨‍💼' : '👩‍💼';
+            area.appendChild(el);
+        });
+        for (let i = 0; i < 3; i++) {
+            const teller = document.getElementById('teller-' + i);
+            if (teller) teller.className = 'teller-person ' + (ui.tellerBusy[i] ? 'bounce' : '');
+        }
+    }
+
+    function processDay() {
+        const events = [
+            {name: "경기 호황", effect: "고객 수 +25%, 자산수익 +0.5%p", mult: 1.25, defaultChange: -0.3, yieldChange: 0.5}, 
+            {name: "경기 침체", effect: "고객 수 -20%, 자산수익 -0.3%p", mult: 0.8, defaultChange: 0.5, yieldChange: -0.3}, 
+            {name: "안정적 시장", effect: "변화 없음", mult: 1.0, defaultChange: 0, yieldChange: 0},
+            {name: "부동산 버블", effect: "대출 급증, 주식수익 상승", loanMult: 1.4, defaultChange: 0.8, yieldChange: 0.3},
+            {name: "금리 인상", effect: "예금↑ 대출↓, 채권수익 하락", depositMult: 1.3, loanMult: 0.7, defaultChange: 0.2, yieldChange: -0.2},
+            {name: "주식시장 급락", effect: "주식손실, 안전자산 선호", mult: 0.9, yieldChange: -0.8},
+            {name: "채권시장 호황", effect: "채권수익 상승", mult: 1.0, yieldChange: 0.4}
+        ];
+        ui.event = events[Math.floor(Math.random() * events.length)];
+        
+        // 기본 계산
+        const depositMult = ui.event.depositMult || ui.event.mult || 1.0;
+        const loanMult = ui.event.loanMult || ui.event.mult || 1.0;
+        const newDeposit = Math.floor(game.depositCustomers * depositMult);
+        const newLoan = Math.floor(game.loanCustomers * loanMult);
+        
+        // 자산운용수익률 변동 (시장 상황에 따라)
+        const marketYieldChange = (ui.event.yieldChange || 0) + (Math.random() - 0.5) * 0.4;
+        game.assetYield = Math.max(1.0, Math.min(8.0, game.assetYield + marketYieldChange));
+        
+        // 연체율 변동
+        game.defaultRate = Math.max(0.5, Math.min(15, game.defaultRate + (Math.random() - 0.5) * 2 + (ui.event.defaultChange || 0)));
+        
+        // 수신자금 업데이트
+        game.depositBalance = newDeposit * 50000000; // 평균 예금액 5천만원
+        
+        // 손익 계산
+        const loanIncome = game.loanBalance * (game.loanRate / 100);  // 대출이자 수익
+        const assetIncome = game.depositBalance * (game.assetYield / 100);  // 자산운용 수익 (핵심!)
+        const totalIncome = loanIncome + assetIncome;
+        
+        const depositCost = game.depositBalance * (game.depositRate / 100);  // 예금이자 비용
+        const operatingCost = game.advertising + (game.capital * 0.01);  // 운영비용
+        const defaultLoss = game.loanBalance * (game.defaultRate / 100);  // 연체손실
+        const totalCost = depositCost + operatingCost + defaultLoss;
+        
+        const netIncome = totalIncome - totalCost;
+
+        // BIS 자기자본비율 계산 (위험가중자산 대비)
+        const riskWeightedAssets = game.loanBalance * 1.0 + game.depositBalance * 0.2; // 대출은 100%, 기타자산은 20% 위험가중치
+        game.capitalRatio = (game.capital / riskWeightedAssets) * 100;
+        
+        // 부실채권비율 계산
+        game.badLoanRatio = Math.max(0.1, Math.min(20, game.badLoanRatio + (Math.random() - 0.5) * 0.5 + (ui.event.defaultChange || 0) * 0.3));
+
+        // FSC 감독 체크
+        checkFSCRegulation();
+        
+        // 이사회 압박 체크
+        checkBoardPressure();
+
+        // 게임 상태 업데이트
+        game.depositCustomers = newDeposit; 
+        game.loanCustomers = newLoan; 
+        game.profit += netIncome;
+        game.capital = Math.max(game.capital + netIncome, 1000000000); // 최소 자본금 10억 유지
+        game.round++; 
+        game.month = game.month === 12 ? 1 : game.month + 1;
+        game.year = game.month === 1 ? game.year + 1 : game.year;
+        game.time = 9; 
+        game.isOpen = true;
+
+        ui.dayResult = {
+            loanIncome, assetIncome, totalIncome,
+            depositCost, operatingCost, defaultLoss, totalCost,
+            netIncome
+        }; 
+        ui.showDayEnd = false;
+        
+        // 고객 반응
+        generateReactions();
+        
+        startTimers(); render();
+    }
+
+    function checkFSCRegulation() {
+        ui.fscAlert = null;
+        
+        // BIS 자기자본비율 8% 미만 - 강력한 제재
+        if (game.capitalRatio < 8) {
+            // 극단적 조치: 대출 신규 중단
+            game.fscSanctions.loanLimit = true;
+            game.fscSanctions.operationSuspend = true;
+            
+            ui.fscAlert = {
+                type: 'critical',
+                title: '🚨 금융감독원 긴급 제재조치',
+                message: `BIS 자기자본비율 ${game.capitalRatio.toFixed(1)}% 미달로 신규 대출 전면 중단 및 부분 영업정지 명령`,
+                penalty: '신규 대출 중단, 일부 영업 정지',
+                action: 'enforced'
+            };
+            game.fscWarnings.push('BIS비율미달');
+            
+            // 강제 조치: 대출 고객 수 30% 감소
+            game.loanCustomers = Math.floor(game.loanCustomers * 0.7);
+            
+        } else if (game.capitalRatio < 10) {
+            game.fscSanctions.dividendBan = true;
+            ui.fscAlert = {
+                type: 'warning',
+                title: '⚠️ 금융감독원 경영개선명령',
+                message: `BIS 자기자본비율 ${game.capitalRatio.toFixed(1)}%로 배당금 지급 금지 및 경영개선계획 제출 명령`,
+                penalty: '배당금지, 경영개선계획 제출'
+            };
+        }
+        
+        // 부실채권비율 5% 이상 - 대출 금리 강제 인상
+        if (game.badLoanRatio > 5) {
+            game.fscSanctions.rateControl = true;
+            // 강제 조치: 대출 금리 최소 6% 이상 유지
+            if (game.loanRate < 6.0) {
+                game.loanRate = 6.0;
+            }
+            
+            ui.fscAlert = {
+                type: 'critical',
+                title: '🚨 금융감독원 부실채권 특별조치',
+                message: `부실채권비율 ${game.badLoanRatio.toFixed(1)}%로 대출금리 최소 6% 강제 설정 및 특별검사 실시`,
+                penalty: '대출금리 강제 조정, 특별검사',
+                action: 'rate_forced'
+            };
+            game.fscWarnings.push('부실채권과다');
+        }
+        
+        // 예대금리차 4%p 이상 - 예금 금리 강제 인상
+        const margin = game.loanRate - game.depositRate;
+        if (margin > 4.0) {
+            // 강제 조치: 예금 금리를 대출금리 - 3.5%p로 강제 조정
+            const forcedDepositRate = Math.max(game.loanRate - 3.5, 2.0);
+            if (game.depositRate < forcedDepositRate) {
+                game.depositRate = forcedDepositRate;
+                game.fscSanctions.rateControl = true;
+                
+                ui.fscAlert = {
+                    type: 'warning',
+                    title: '📋 금융감독원 서민금융 강제조치',
+                    message: `예대금리차 ${margin.toFixed(1)}%p 과도로 예금금리 ${forcedDepositRate.toFixed(1)}% 이상 강제 설정`,
+                    penalty: '예금금리 강제 인상',
+                    action: 'rate_forced'
+                };
+            }
+        }
+
+        // 연속 경고 3회 이상 - 영업정지
+        if (game.fscWarnings.length >= 3) {
+            game.fscSanctions.operationSuspend = true;
+            game.fscWatchList = true;
+            
+            ui.fscAlert = {
+                type: 'critical',
+                title: '🔴 금융감독원 영업정지 명령',
+                message: `연속 위반으로 인한 부분 영업정지. 신규 고객 유치 금지`,
+                penalty: '신규 고객 유치 중단',
+                action: 'operation_halt'
+            };
+            
+            // 강제 조치: 신규 고객 유치 불가
+            game.depositCustomers = Math.max(game.depositCustomers - 10, 50);
+            game.loanCustomers = Math.max(game.loanCustomers - 5, 20);
+        }
+
+        // 감시대상 지정
+        if (game.fscWarnings.length >= 2) {
+            game.fscWatchList = true;
+        }
+    }
+
+    function checkBoardPressure() {
+        ui.boardAlert = null;
+        
+        // 수익성 압박
+        if (game.profit < 0) {
+            game.boardPressure += 10;
+            game.boardActions.ceoWarning++;
+            
+            if (game.boardActions.ceoWarning >= 3) {
+                // 강제 조치: 광고비 50% 삭감
+                game.advertising = Math.floor(game.advertising * 0.5);
+                game.boardActions.budgetCut = true;
+                
+                ui.boardAlert = {
+                    type: 'crisis',
+                    title: '🔥 이사회 긴급 제재조치',
+                    message: `연속 손실로 인해 광고예산 50% 강제 삭감 및 CEO ${game.boardActions.ceoWarning}차 경고`,
+                    pressure: game.boardPressure,
+                    action: 'budget_cut'
+                };
+            } else {
+                ui.boardAlert = {
+                    type: 'pressure',
+                    title: '👔 이사회 긴급 소집',
+                    message: `누적 손실로 CEO ${game.boardActions.ceoWarning}차 경고. 수익성 개선 방안을 즉시 제시하십시오.`,
+                    pressure: game.boardPressure
+                };
+            }
+            
+        } else if (ui.dayResult && ui.dayResult.netIncome < game.capital * 0.001) {
+            game.boardPressure += 5;
+            ui.boardAlert = {
+                type: 'concern',
+                title: '📊 이사회 우려 표명',
+                message: `ROA(자산수익률)가 낮습니다. 더 공격적인 영업전략이 필요합니다.`,
+                pressure: game.boardPressure
+            };
+        } else if (ui.dayResult && ui.dayResult.netIncome > game.capital * 0.005) {
+            game.boardPressure = Math.max(0, game.boardPressure - 3);
+            game.boardActions.ceoWarning = Math.max(0, game.boardActions.ceoWarning - 1);
+        }
+        
+        // 시장점유율 압박
+        if (game.depositCustomers < 80 || game.loanCustomers < 40) {
+            game.boardPressure += 3;
+            
+            if (game.boardPressure > 40 && !game.boardActions.strategyForced) {
+                // 강제 조치: 예금 금리 0.5%p 강제 인상
+                game.depositRate = Math.min(game.depositRate + 0.5, 5.0);
+                game.boardActions.strategyForced = true;
+                
+                ui.boardAlert = {
+                    type: 'strategy',
+                    title: '📈 이사회 강제 전략 변경',
+                    message: `시장점유율 하락으로 예금금리 0.5%p 강제 인상. 공격적 마케팅 전략 시행`,
+                    pressure: game.boardPressure,
+                    action: 'strategy_forced'
+                };
+            } else {
+                ui.boardAlert = {
+                    type: 'strategy',
+                    title: '📈 이사회 전략 검토',
+                    message: `고객 수 감소로 시장점유율이 하락하고 있습니다. 마케팅 전략을 재검토하십시오.`,
+                    pressure: game.boardPressure
+                };
+            }
+        }
+
+        // 이사회 압박이 70 이상 - 인수합병 논의
+        if (game.boardPressure >= 70 && !game.boardActions.mergeTalk) {
+            game.boardActions.mergeTalk = true;
+            ui.boardAlert = {
+                type: 'crisis',
+                title: '💼 이사회 인수합병 검토',
+                message: `경영 악화로 대형은행과의 인수합병을 검토하기 시작했습니다. 즉시 성과 개선이 필요합니다!`,
+                pressure: game.boardPressure,
+                action: 'merger_talk'
+            };
+        }
+
+        // 이사회 압박이 90 이상 - 게임오버 위기
+        if (game.boardPressure >= 90) {
+            ui.boardAlert = {
+                type: 'crisis',
+                title: '🔥 CEO 해임 및 은행 매각',
+                message: `이사회의 신뢰를 완전히 잃었습니다. 은행이 다른 금융기관에 매각될 예정입니다.`,
+                pressure: game.boardPressure,
+                action: 'game_over'
+            };
+            
+            // 게임오버 처리
+            setTimeout(() => {
+                if (confirm('게임오버! 새 게임을 시작하시겠습니까?')) {
+                    location.reload();
+                }
+            }, 2000);
+        }
+    }
+
+    function generateReactions() {
+        ui.reactions = [];
+        
+        // 예금 금리 반응
+        if (game.depositRate >= 3.3) {
+            ui.reactions.push({icon: '😊', msg: '"' + game.depositRate + '% 좋네요!"'});
+        } else if (game.depositRate < 2.3) {
+            ui.reactions.push({icon: '😞', msg: '"' + game.depositRate + '%는 너무 낮아요"'});
+        }
+        
+        // 대출 금리 반응
+        if (game.loanRate <= 4.5) {
+            ui.reactions.push({icon: '🎉', msg: '"대출 ' + game.loanRate + '%! 저렴해요!"'});
+        } else if (game.loanRate > 6) {
+            ui.reactions.push({icon: '😠', msg: '"대출 ' + game.loanRate + '%는 너무 비싸요!"'});
+        }
+        
+        // 자산운용 성과에 대한 시장 반응
+        if (game.assetYield > 4.5) {
+            ui.reactions.push({icon: '📈', msg: '"운용수익 ' + game.assetYield.toFixed(1) + '%! 뛰어난 자산관리네요"'});
+        } else if (game.assetYield < 2.5) {
+            ui.reactions.push({icon: '📉', msg: '"운용수익 ' + game.assetYield.toFixed(1) + '%는 아쉽네요. 포트폴리오 재검토 필요"'});
+        }
+        
+        // FSC 감시대상일 때 언론 반응
+        if (game.fscWatchList) {
+            ui.reactions.push({icon: '📰', msg: '"금감원 감시대상 은행... 대출 받기 꺼려져요"'});
+        }
+        
+        // 이사회 압박이 높을 때 직원 반응
+        if (game.boardPressure > 50) {
+            ui.reactions.push({icon: '😰', msg: '"사내 분위기가 좋지 않네요... 구조조정 소문이..."'});
+        }
+        
+        // 자본비율 부족시 신용등급 기관 반응
+        if (game.capitalRatio < 8) {
+            ui.reactions.push({icon: '📊', msg: '"신용등급 하향 조정 검토... 자본 확충이 시급합니다"'});
+        }
+    }
+
+    function openInput(type, value, label) { ui.inputType = type; ui.inputValue = value.toString(); ui.inputLabel = label; ui.showInput = true; render(); }
+    function closeInput() { ui.showInput = false; render(); }
+    function applyInput() {
+        const val = parseFloat(ui.inputValue);
+        if (isNaN(val)) return;
+        switch (ui.inputType) {
+            case 'depositRate': game.depositRate = Math.max(1, Math.min(5, val)); break;
+            case 'loanRate': game.loanRate = Math.max(3, Math.min(10, val)); break;
+            case 'advertising': game.advertising = Math.max(0, Math.min(5000000, Math.round(val))); break;
+        }
+        closeInput();
+    }
+
+    function updateSlider(id, type) {
+        const slider = document.getElementById(id), display = document.getElementById(id + '-value');
+        if (!slider || !display) return;
+        const val = parseFloat(slider.value);
+        switch (type) {
+            case 'depositRate': game.depositRate = val; break;
+            case 'loanRate': game.loanRate = val; break;
+            case 'advertising': game.advertising = parseInt(val); break;
+        }
+        display.textContent = type === 'advertising' ? fmt(val) : val + '%';
+    }
+
+    function render() {
+        const app = document.getElementById('app');
+        
+        if (!game.started) {
+            app.innerHTML = `<div class="screen" style="background: linear-gradient(135deg, #1e3a8a 0%, #7c3aed 50%, #1e40af 100%); align-items: center; justify-content: center;">
+                <div style="max-width: 400px; width: 100%; padding: 2rem;">
+                    <div class="text-center mb-4">
+                        <h1 class="text-xl font-bold" style="color: white; margin-bottom: 1rem;">🏦 은행王</h1>
+                        <p style="color: #bfdbfe;">현실적인 은행 경영 시뮬레이션</p>
+                    </div>
+                    <div style="background: #111827; border: 2px solid #60a5fa; border-radius: 0.75rem; padding: 1.5rem;">
+                        <div class="mb-3">
+                            <label style="color: #93c5fd; font-weight: bold; margin-bottom: 0.5rem; display: block;">🏛️ 은행 이름:</label>
+                            <input type="text" placeholder="예: 신한, 국민, 하나, 우리..." value="${game.bankName}" class="input" style="background: #374151; color: white;" onchange="game.bankName = this.value; render();"/>
+                        </div>
+                        <button onclick="startGame()" ${game.bankName.trim() ? '' : 'disabled'} class="btn w-full" style="padding: 1rem;">
+                            ${game.bankName.trim() ? '🚀 ' + game.bankName + ' 은행 시작!' : '은행 이름을 입력하세요'}
+                        </button>
+                    </div>
+                </div>
+            </div>`;
+            return;
+        }
+
+        app.innerHTML = `<div class="screen">
+            <div class="header">
+                <div class="flex justify-between items-center">
+                    <span class="font-bold">🏦 ${game.bankName}</span>
+                    <span style="color: #93c5fd;">📅 ${game.year}년 ${game.month}월 ${game.round}일</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <div id="time">🕐 ${fmtTime(game.time)}</div>
+                    <div style="color: #86efac; font-weight: bold;">💰 ${fmt(game.capital)}</div>
+                    ${game.isOpen ? '<button onclick="advanceTime()" class="btn">⏰ +1H</button>' : '<button onclick="ui.showDayEnd = true; render();" class="btn">🌙 마감</button>'}
+                </div>
+            </div>
+            <div class="bank-area">
+                <div class="clock"><div id="hour-hand" class="hand hour-hand"></div><div id="minute-hand" class="hand minute-hand"></div></div>
+                <div class="sign"><div class="font-bold text-center">${game.bankName} 은행</div></div>
+                <div class="rate-board"><div class="font-bold mb-1">💰 금리</div><div>예금: ${game.depositRate}%</div><div>대출: ${game.loanRate}%</div></div>
+                <div class="teller">
+                    <div class="teller-booth"><div id="teller-0" class="teller-person">👨‍💼</div></div>
+                    <div class="teller-booth"><div id="teller-1" class="teller-person">👨‍💼</div></div>
+                    <div class="teller-booth"><div id="teller-2" class="teller-person">👨‍💼</div></div>
+                </div>
+                <div id="customers" class="customers"></div>
+            </div>
+            <div class="content">
+                <h3 class="text-lg font-bold mb-3">📊 은행 경영 현황</h3>
+                <div class="grid mb-4">
+                    <div class="card blue"><div class="font-bold mb-2">💰 수신</div><div class="text-sm">고객: ${game.depositCustomers}명<br>예금: ${fmt(game.depositBalance)}<br>운용수익: ${game.assetYield.toFixed(1)}%</div></div>
+                    <div class="card green"><div class="font-bold mb-2">💸 여신</div><div class="text-sm">고객: ${game.loanCustomers}명<br>대출: ${fmt(game.loanBalance)}<br>연체율: ${game.defaultRate.toFixed(1)}%</div></div>
+                    <div class="card yellow"><div class="font-bold mb-2">🏦 현황</div><div class="text-sm">자본: ${fmt(game.capital)}<br>수익: ${fmt(game.profit)}<br>예대마진: ${(game.loanRate - game.depositRate).toFixed(1)}%p</div></div>
+                </div>
+                
+                <!-- 금융감독 현황 -->
+                <div class="grid mb-4">
+                    <div class="card" style="background: ${game.capitalRatio < 8 ? '#fee2e2' : game.capitalRatio < 10 ? '#fef3c7' : '#dcfce7'};">
+                        <div class="font-bold mb-1">📊 BIS비율</div>
+                        <div class="text-sm">${game.capitalRatio.toFixed(1)}%</div>
+                        <div style="font-size: 0.7rem; color: #666;">${game.capitalRatio < 8 ? '⚠️위험' : game.capitalRatio < 10 ? '주의' : '양호'}</div>
+                    </div>
+                    <div class="card" style="background: ${game.badLoanRatio > 5 ? '#fee2e2' : game.badLoanRatio > 3 ? '#fef3c7' : '#dcfce7'};">
+                        <div class="font-bold mb-1">📈 부실채권</div>
+                        <div class="text-sm">${game.badLoanRatio.toFixed(1)}%</div>
+                        <div style="font-size: 0.7rem; color: #666;">${game.badLoanRatio > 5 ? '⚠️과다' : game.badLoanRatio > 3 ? '주의' : '양호'}</div>
+                    </div>
+                    <div class="card" style="background: ${game.boardPressure > 60 ? '#fee2e2' : game.boardPressure > 30 ? '#fef3c7' : '#dcfce7'};">
+                        <div class="font-bold mb-1">👔 이사회</div>
+                        <div class="text-sm">압박도 ${game.boardPressure}</div>
+                        <div style="font-size: 0.7rem; color: #666;">${game.boardPressure > 60 ? '⚠️위험' : game.boardPressure > 30 ? '주의' : '안정'}</div>
+                    </div>
+                </div>
+                
+                ${game.fscWatchList ? '<div class="card" style="background: #fee2e2; border-left: 4px solid #dc2626; margin-bottom: 1rem;"><div class="font-bold">🚨 금감원 감시대상 지정</div><div class="text-sm">특별 관리 감독 하에 있습니다</div></div>' : ''}
+                
+                <!-- FSC 제재조치 표시 -->
+                ${Object.values(game.fscSanctions).some(s => s) ? `
+                    <div class="card" style="background: #fee2e2; border-left: 4px solid #dc2626; margin-bottom: 1rem;">
+                        <div class="font-bold">⚖️ 금감원 제재조치 시행중</div>
+                        <div class="text-sm">
+                            ${game.fscSanctions.rateControl ? '• 금리 통제 (강제 금리 조정)<br>' : ''}
+                            ${game.fscSanctions.loanLimit ? '• 신규 대출 제한<br>' : ''}
+                            ${game.fscSanctions.dividendBan ? '• 배당금 지급 금지<br>' : ''}
+                            ${game.fscSanctions.operationSuspend ? '• 부분 영업정지<br>' : ''}
+                        </div>
+                    </div>
+                ` : ''}
+                
+                <!-- 이사회 제재조치 표시 -->
+                ${Object.values(game.boardActions).some(s => s) || game.boardActions.ceoWarning > 0 ? `
+                    <div class="card" style="background: #fef3c7; border-left: 4px solid #f59e0b; margin-bottom: 1rem;">
+                        <div class="font-bold">👔 이사회 조치사항</div>
+                        <div class="text-sm">
+                            ${game.boardActions.ceoWarning > 0 ? `• CEO 경고 ${game.boardActions.ceoWarning}회<br>` : ''}
+                            ${game.boardActions.strategyForced ? '• 강제 전략 변경 시행<br>' : ''}
+                            ${game.boardActions.budgetCut ? '• 예산 삭감 조치<br>' : ''}
+                            ${game.boardActions.mergeTalk ? '• 인수합병 검토중<br>' : ''}
+                        </div>
+                    </div>
+                ` : ''}
+                
+                ${ui.fscAlert ? `<div class="card mb-3" style="background: ${ui.fscAlert.type === 'critical' ? '#fee2e2' : '#fef3c7'}; border-left: 4px solid ${ui.fscAlert.type === 'critical' ? '#dc2626' : '#f59e0b'};">
+                    <div class="font-bold">${ui.fscAlert.title}</div>
+                    <div class="text-sm">${ui.fscAlert.message}</div>
+                    <div style="font-size: 0.7rem; color: #666; margin-top: 0.5rem;">조치: ${ui.fscAlert.penalty}</div>
+                    ${ui.fscAlert.action ? `<div style="font-size: 0.7rem; color: #dc2626; margin-top: 0.3rem; font-weight: bold;">
+                        ${ui.fscAlert.action === 'rate_forced' ? '✓ 금리가 강제로 조정되었습니다' : ''}
+                        ${ui.fscAlert.action === 'operation_halt' ? '✓ 신규 고객 유치가 중단되었습니다' : ''}
+                        ${ui.fscAlert.action === 'enforced' ? '✓ 강제 제재조치가 시행되었습니다' : ''}
+                    </div>` : ''}
+                </div>` : ''}
+                
+                ${ui.boardAlert ? `<div class="card mb-3" style="background: ${ui.boardAlert.type === 'crisis' ? '#fee2e2' : '#fef3c7'}; border-left: 4px solid ${ui.boardAlert.type === 'crisis' ? '#dc2626' : '#f59e0b'};">
+                    <div class="font-bold">${ui.boardAlert.title}</div>
+                    <div class="text-sm">${ui.boardAlert.message}</div>
+                    <div style="font-size: 0.7rem; color: #666; margin-top: 0.5rem;">압박도: ${ui.boardAlert.pressure}/100</div>
+                    ${ui.boardAlert.action ? `<div style="font-size: 0.7rem; color: #dc2626; margin-top: 0.3rem; font-weight: bold;">
+                        ${ui.boardAlert.action === 'budget_cut' ? '✓ 광고예산이 50% 삭감되었습니다' : ''}
+                        ${ui.boardAlert.action === 'strategy_forced' ? '✓ 예금금리가 강제로 0.5%p 인상되었습니다' : ''}
+                        ${ui.boardAlert.action === 'merger_talk' ? '✓ 인수합병 논의가 시작되었습니다' : ''}
+                        ${ui.boardAlert.action === 'game_over' ? '✓ 게임오버 - 은행이 매각됩니다' : ''}
+                    </div>` : ''}
+                </div>` : ''}
+                ${ui.reactions.map(r => `<div class="card green mb-3">${r.icon} ${r.msg}</div>`).join('')}
+                ${ui.event ? `<div class="card yellow">${ui.event.name}: ${ui.event.effect}</div>` : ''}
+            </div>
+        </div>`;
+
+        if (ui.showDayEnd) {
+            app.insertAdjacentHTML('beforeend', `<div class="modal">
+                <div class="modal-content popup">
+                    <h3 class="text-xl font-bold mb-3 text-center">🌙 영업 마감</h3>
+                    ${ui.dayResult ? `<div class="mb-3" style="background: #1e40af; padding: 1rem; border-radius: 0.5rem;">
+                        <h4 style="color: #bfdbfe; font-weight: bold; margin-bottom: 0.5rem;">📊 일일 손익계산서</h4>
+                        <div style="color: #86efac; margin-bottom: 0.3rem;">
+                            📈 수익 총계: ${fmt(ui.dayResult.totalIncome)}
+                        </div>
+                        <div style="color: #93c5fd; font-size: 0.8rem; margin-left: 0.5rem;">
+                            • 대출이자 수익: ${fmt(ui.dayResult.loanIncome)}<br>
+                            • 자산운용 수익: ${fmt(ui.dayResult.assetIncome)} (${game.assetYield.toFixed(1)}%)
+                        </div>
+                        <div style="color: #fca5a5; margin: 0.3rem 0;">
+                            📉 비용 총계: ${fmt(ui.dayResult.totalCost)}
+                        </div>
+                        <div style="color: #93c5fd; font-size: 0.8rem; margin-left: 0.5rem;">
+                            • 예금이자 비용: ${fmt(ui.dayResult.depositCost)}<br>
+                            • 운영비용: ${fmt(ui.dayResult.operatingCost)}<br>
+                            • 연체손실: ${fmt(ui.dayResult.defaultLoss)}
+                        </div>
+                        <div class="font-bold" style="color: ${ui.dayResult.netIncome >= 0 ? '#86efac' : '#fca5a5'}; margin-top: 0.5rem;">
+                            💰 순이익: ${fmt(ui.dayResult.netIncome)}
+                        </div>
+                        <div style="color: #93c5fd; font-size: 0.8rem; margin-top: 0.5rem;">
+                            BIS비율: ${game.capitalRatio.toFixed(1)}% | 부실채권: ${game.badLoanRatio.toFixed(1)}% | 이사회압박: ${game.boardPressure}
+                        </div>
+                    </div>` : ''}
+                    <div class="mb-3" style="background: #f3f4f6; padding: 1rem; border-radius: 0.5rem;">
+                        <div class="flex justify-between items-center mb-2">
+                            <label class="font-bold">💰 수신 이자율</label>
+                            <span id="deposit-slider-value" class="font-bold" style="color: #2563eb;">${game.depositRate}%</span>
+                        </div>
+                        <input type="range" id="deposit-slider" min="1" max="5" step="0.1" value="${game.depositRate}" class="slider" onchange="updateSlider('deposit-slider', 'depositRate')"/>
+                    </div>
+                    <div class="mb-3" style="background: #f3f4f6; padding: 1rem; border-radius: 0.5rem;">
+                        <div class="flex justify-between items-center mb-2">
+                            <label class="font-bold">💸 여신 이자율</label>
+                            <span id="loan-slider-value" class="font-bold" style="color: #16a34a;">${game.loanRate}%</span>
+                        </div>
+                        <input type="range" id="loan-slider" min="3" max="10" step="0.1" value="${game.loanRate}" class="slider" onchange="updateSlider('loan-slider', 'loanRate')"/>
+                    </div>
+                    <button onclick="processDay()" class="btn w-full">🌅 다음 날 영업 시작</button>
+                </div>
+            </div>`);
+        }
+
+        if (ui.showInput) {
+            app.insertAdjacentHTML('beforeend', `<div class="modal">
+                <div class="modal-content">
+                    <h3 class="text-lg font-bold mb-3">${ui.inputLabel} 직접 입력</h3>
+                    <input type="number" id="modal-input" value="${ui.inputValue}" class="input mb-3" onchange="ui.inputValue = this.value"/>
+                    <div class="flex gap-2">
+                        <button onclick="closeInput()" class="btn btn-secondary w-full">취소</button>
+                        <button onclick="applyInput()" class="btn w-full">적용</button>
+                    </div>
+                </div>
+            </div>`);
+        }
+
+        updateTime(); updateCustomers();
+    }
+
+    document.addEventListener('DOMContentLoaded', render);
+</script>
+```
+
+</body>
+</html>
