@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>🏦 은행王</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+```
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        width: 100vw; height: 100vh; overflow: hidden; font-size: 16px;
+    }
+
+    .screen { width: 100vw; height: 100vh; display: flex; flex-direction: column; }
+    .header { background: #1f2937; color: white; padding: 1rem; height: 15vh; display: flex; flex-direction: column; justify-content: space-between; }
+    .bank-area { background: linear-gradient(180deg, #dbeafe 0%, #bfdbfe 100%); height: 25vh; position: relative; overflow: hidden; }
+    .content { flex: 1; overflow-y: auto; padding: 1rem; background: white; }
+    
+    .btn { background: #2563eb; color: white; border: none; padding: 0.75rem 1rem; border-radius: 0.5rem; font-weight: 600; cursor: pointer; }
+    .btn:active { transform: translateY(1px); }
+    .btn-secondary { background: #6b7280; }
+    
+    .input { width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; font-size: 1rem; }
+    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; }
+    .card { background: #f3f4f6; padding: 1rem; border-radius: 0.5rem; }
+    
+    .blue { background: #dbeafe; color: #1e40af; }
+    .green { background: #dcfce7; color: #166534; }
+    .yellow { background: #fef3c7; color: #92400e; }
+    
+    .clock { position: absolute; top: 1rem; left: 1rem; width: 60px; height: 60px; background: white; border: 3px solid #ca8a04; border-radius: 50%; }
+    .hand { position: absolute; background: #374151; transform-origin: bottom center; border-radius: 2px; }
+    .hour-hand { width: 2px; height: 15px; top: 50%; left: 50%; transform: translate(-50%, -100%); }
+    .minute-hand { width: 1px; height: 20px; top: 50%; left: 50%; transform: translate(-50%, -100%); }
+    
+    .teller { position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%); display: flex; gap: 1rem; }
+    .teller-booth { width: 40px; height: 25px; background: #92400e; border: 2px solid #451a03; border-radius: 0.25rem; position: relative; }
+    .teller-person { position: absolute; top: -2rem; left: 50%; transform: translateX(-50%); font-size: 20px; }
+    
+    .customers { position: absolute; bottom: 1rem; left: 0; width: 100%; height: 30px; }
+    .customer { position: absolute; bottom: 0; font-size: 18px; }
+    
+    .sign { position: absolute; top: 1rem; left: 50%; transform: translateX(-50%); background: #1e40af; color: white; padding: 0.5rem 1rem; border-radius: 0.5rem; border: 2px solid #1d4ed8; }
+    .rate-board { position: absolute; top: 1rem; right: 1rem; background: white; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 0.5rem; font-size: 0.75rem; }
+    
+    .slider { width: 100%; height: 1.5rem; border-radius: 0.5rem; background: #d1d5db; outline: none; cursor: pointer; -webkit-appearance: none; }
+    .slider::-webkit-slider-thumb { -webkit-appearance: none; height: 2rem; width: 2rem; border-radius: 50%; background: #2563eb; cursor: pointer; border: 2px solid #1e40af; }
+    
+    .modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.75); display: flex; align-items: center; justify-content: center; padding: 1rem; z-index: 50; }
+    .modal-content { background: white; padding: 1.5rem; border-radius: 0.75rem; width: 100%; max-width: 400px; }
+    .popup { background: #1e3a8a; color: white; border: 2px solid #60a5fa; border-radius: 0.75rem; }
+    
+    @keyframes bounce { 0%, 20%, 53%, 80%, 100% { transform: translateX(-50%) translateY(0); } 40%, 43% { transform: translateX(-50%) translateY(-10px); } 70% { transform: translateX(-50%) translateY(-5px); } }
+    .bounce { animation: bounce 1s infinite; }
+    
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+    .pulse { animation: pulse 2s infinite; }
+    
+    .mb-2 { margin-bottom: 0.5rem; } .mb-3 { margin-bottom: 0.75rem; } .mb-4 { margin-bottom: 1rem; }
+    .text-sm { font-size: 0.875rem; } .text-lg { font-size: 1.125rem; } .text-xl { font-size: 1.25rem; }
+    .font-bold { font-weight: 700; } .text-center { text-align: center; }
+    .flex { display: flex; } .justify-between { justify-content: space-between; } .items-center { align-items: center; } .gap-2 { gap: 0.5rem; }
+    .w-full { width: 100%; } .hidden { display: none; }
+</style>
+```
+
+</head>
+<body>
+    <div id="app"></div>
+
+```
+<script>
+    let game = {
+        bankName: "", capital: 50000000000, profit: 0, depositRate: 2.5, loanRate: 5.0,
+        depositCustomers: 100, loanCustomers: 50, depositBalance: 5000000000, loanBalance: 5000000000,
+        advertising: 1000000, round: 1, year: 1, month: 1, time: 9, isOpen: true, started: false
+    };
+
+    let ui = {
+        showDayEnd: false, showInput: false, inputType: '', inputValue: '', inputLabel: '',
+        customers: [], tellerBusy: [false, false, false], dayResult: null, event: null, reactions: []
+    };
+
+    let timers = { game: null, customer: null };
+
+    function fmt(amount) {
+        if (amount >= 1000000000000) return (amount / 1000000000000).toFixed(1) + '조원';
+        if (amount >= 100000000) return (amount / 100000000).toFixed(0) + '억원';
+        if (amount >= 10000) return (amount / 10000).toFixed(0) + '만원';
+        return Math.round(amount / 1000) + '천원';
+    }
+
+    function fmtTime(time) {
+        const h = Math.floor(time), m = Math.round((time % 1) * 60);
+        return h.toString().padStart(2, '0') + ':' + m.toString().padStart(2, '0');
+    }
+
+    function startGame() { game.started = true; startTimers(); render(); }
+
+    function startTimers() {
+        clearTimers();
+        if (game.started && game.isOpen) {
+            timers.game = setInterval(() => {
+                game.time += 0.3;
+                if (game.time >= 18) { game.time = 18; game.isOpen = false; ui.showDayEnd = true; clearTimers(); render(); }
+                updateTime();
+            }, 1000);
+
+            timers.customer = setInterval(() => {
+                if (Math.random() < 0.4) {
+                    ui.customers.push({ id: Date.now(), type: Math.random() < 0.6 ? 'deposit' : 'loan', pos: -50, speed: 2 + Math.random() * 3 });
+                    if (ui.customers.length > 6) ui.customers.shift();
+                }
+                ui.customers = ui.customers.map(c => ({...c, pos: c.pos + c.speed})).filter(c => c.pos < window.innerWidth + 50);
+                ui.tellerBusy = [Math.random() < 0.3, Math.random() < 0.3, Math.random() < 0.3];
+                updateCustomers();
+            }, 500);
+        }
+    }
+
+    function clearTimers() { if (timers.game) clearInterval(timers.game); if (timers.customer) clearInterval(timers.customer); }
+
+    function advanceTime() {
+        if (game.started && game.isOpen) {
+            game.time += 1;
+            if (game.time >= 18) { game.time = 18; game.isOpen = false; ui.showDayEnd = true; clearTimers(); }
+            updateTime(); render();
+        }
+    }
+
+    function updateTime() {
+        const timeEl = document.getElementById('time');
+        if (timeEl) {
+            timeEl.textContent = '🕐 ' + fmtTime(game.time);
+            timeEl.className = game.time >= 17.5 ? 'text-red-300 pulse' : game.time >= 17 ? 'text-yellow-300' : 'text-green-300';
+        }
+        updateClock();
+    }
+
+    function updateClock() {
+        const hour = game.time % 12, minute = (game.time % 1) * 60;
+        const hourAngle = (hour * 30) + (minute * 0.5), minuteAngle = minute * 6;
+        const hourHand = document.getElementById('hour-hand'), minuteHand = document.getElementById('minute-hand');
+        if (hourHand) hourHand.style.transform = 'translate(-50%, -100%) rotate(' + hourAngle + 'deg)';
+        if (minuteHand) minuteHand.style.transform = 'translate(-50%, -100%) rotate(' + minuteAngle + 'deg)';
+    }
+
+    function updateCustomers() {
+        const area = document.getElementById('customers');
+        if (!area) return;
+        area.innerHTML = '';
+        ui.customers.forEach(customer => {
+            const el = document.createElement('div');
+            el.className = 'customer'; el.style.left = customer.pos + 'px';
+            el.innerHTML = customer.type === 'deposit' ? '👨‍💼' : '👩‍💼';
+            area.appendChild(el);
+        });
+        for (let i = 0; i < 3; i++) {
+            const teller = document.getElementById('teller-' + i);
+            if (teller) teller.className = 'teller-person ' + (ui.tellerBusy[i] ? 'bounce' : '');
+        }
+    }
+
+    function processDay() {
+        const events = [{name: "경기 호황", effect: "고객 수 +25%", mult: 1.25}, {name: "경기 침체", effect: "고객 수 -20%", mult: 0.8}, {name: "안정적 시장", effect: "변화 없음", mult: 1.0}];
+        ui.event = events[Math.floor(Math.random() * events.length)];
+        
+        const newDeposit = Math.floor(game.depositCustomers * ui.event.mult);
+        const newLoan = Math.floor(game.loanCustomers * ui.event.mult);
+        const income = game.loanBalance * (game.loanRate / 100);
+        const cost = game.depositBalance * (game.depositRate / 100) + game.advertising;
+        const netIncome = income - cost;
+
+        game.depositCustomers = newDeposit; game.loanCustomers = newLoan; game.profit += netIncome;
+        game.round++; game.month = game.month === 12 ? 1 : game.month + 1;
+        game.year = game.month === 1 ? game.year + 1 : game.year;
+        game.time = 9; game.isOpen = true;
+
+        ui.dayResult = {income, cost, netIncome}; ui.showDayEnd = false;
+        ui.reactions = game.depositRate >= 3.3 ? [{icon: '😊', msg: '"' + game.depositRate + '% 좋네요!"'}] : 
+                      game.depositRate < 2.3 ? [{icon: '😞', msg: '"' + game.depositRate + '%는 너무 낮아요"'}] : [];
+        startTimers(); render();
+    }
+
+    function openInput(type, value, label) { ui.inputType = type; ui.inputValue = value.toString(); ui.inputLabel = label; ui.showInput = true; render(); }
+    function closeInput() { ui.showInput = false; render(); }
+    function applyInput() {
+        const val = parseFloat(ui.inputValue);
+        if (isNaN(val)) return;
+        switch (ui.inputType) {
+            case 'depositRate': game.depositRate = Math.max(1, Math.min(5, val)); break;
+            case 'loanRate': game.loanRate = Math.max(3, Math.min(10, val)); break;
+            case 'advertising': game.advertising = Math.max(0, Math.min(5000000, Math.round(val))); break;
+        }
+        closeInput();
+    }
+
+    function updateSlider(id, type) {
+        const slider = document.getElementById(id), display = document.getElementById(id + '-value');
+        if (!slider || !display) return;
+        const val = parseFloat(slider.value);
+        switch (type) {
+            case 'depositRate': game.depositRate = val; break;
+            case 'loanRate': game.loanRate = val; break;
+            case 'advertising': game.advertising = parseInt(val); break;
+        }
+        display.textContent = type === 'advertising' ? fmt(val) : val + '%';
+    }
+
+    function render() {
+        const app = document.getElementById('app');
+        
+        if (!game.started) {
+            app.innerHTML = `<div class="screen" style="background: linear-gradient(135deg, #1e3a8a 0%, #7c3aed 50%, #1e40af 100%); align-items: center; justify-content: center;">
+                <div style="max-width: 400px; width: 100%; padding: 2rem;">
+                    <div class="text-center mb-4">
+                        <h1 class="text-xl font-bold" style="color: white; margin-bottom: 1rem;">🏦 은행王</h1>
+                        <p style="color: #bfdbfe;">현실적인 은행 경영 시뮬레이션</p>
+                    </div>
+                    <div style="background: #111827; border: 2px solid #60a5fa; border-radius: 0.75rem; padding: 1.5rem;">
+                        <div class="mb-3">
+                            <label style="color: #93c5fd; font-weight: bold; margin-bottom: 0.5rem; display: block;">🏛️ 은행 이름:</label>
+                            <input type="text" placeholder="예: 신한, 국민, 하나, 우리..." value="${game.bankName}" class="input" style="background: #374151; color: white;" onchange="game.bankName = this.value; render();"/>
+                        </div>
+                        <button onclick="startGame()" ${game.bankName.trim() ? '' : 'disabled'} class="btn w-full" style="padding: 1rem;">
+                            ${game.bankName.trim() ? '🚀 ' + game.bankName + ' 은행 시작!' : '은행 이름을 입력하세요'}
+                        </button>
+                    </div>
+                </div>
+            </div>`;
+            return;
+        }
+
+        app.innerHTML = `<div class="screen">
+            <div class="header">
+                <div class="flex justify-between items-center">
+                    <span class="font-bold">🏦 ${game.bankName}</span>
+                    <span style="color: #93c5fd;">📅 ${game.year}년 ${game.month}월 ${game.round}일</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <div id="time">🕐 ${fmtTime(game.time)}</div>
+                    <div style="color: #86efac; font-weight: bold;">💰 ${fmt(game.capital)}</div>
+                    ${game.isOpen ? '<button onclick="advanceTime()" class="btn">⏰ +1H</button>' : '<button onclick="ui.showDayEnd = true; render();" class="btn">🌙 마감</button>'}
+                </div>
+            </div>
+            <div class="bank-area">
+                <div class="clock"><div id="hour-hand" class="hand hour-hand"></div><div id="minute-hand" class="hand minute-hand"></div></div>
+                <div class="sign"><div class="font-bold text-center">${game.bankName} 은행</div></div>
+                <div class="rate-board"><div class="font-bold mb-1">💰 금리</div><div>예금: ${game.depositRate}%</div><div>대출: ${game.loanRate}%</div></div>
+                <div class="teller">
+                    <div class="teller-booth"><div id="teller-0" class="teller-person">👨‍💼</div></div>
+                    <div class="teller-booth"><div id="teller-1" class="teller-person">👨‍💼</div></div>
+                    <div class="teller-booth"><div id="teller-2" class="teller-person">👨‍💼</div></div>
+                </div>
+                <div id="customers" class="customers"></div>
+            </div>
+            <div class="content">
+                <h3 class="text-lg font-bold mb-3">📊 은행 경영 현황</h3>
+                <div class="grid mb-4">
+                    <div class="card blue"><div class="font-bold mb-2">💰 수신</div><div class="text-sm">고객: ${game.depositCustomers}명<br>예금: ${fmt(game.depositBalance)}</div></div>
+                    <div class="card green"><div class="font-bold mb-2">💸 여신</div><div class="text-sm">고객: ${game.loanCustomers}명<br>대출: ${fmt(game.loanBalance)}</div></div>
+                    <div class="card yellow"><div class="font-bold mb-2">🏦 현황</div><div class="text-sm">자본: ${fmt(game.capital)}<br>수익: ${fmt(game.profit)}</div></div>
+                </div>
+                ${ui.reactions.map(r => `<div class="card green mb-3">${r.icon} ${r.msg}</div>`).join('')}
+                ${ui.event ? `<div class="card yellow">${ui.event.name}: ${ui.event.effect}</div>` : ''}
+            </div>
+        </div>`;
+
+        if (ui.showDayEnd) {
+            app.insertAdjacentHTML('beforeend', `<div class="modal">
+                <div class="modal-content popup">
+                    <h3 class="text-xl font-bold mb-3 text-center">🌙 영업 마감</h3>
+                    ${ui.dayResult ? `<div class="mb-3" style="background: #1e40af; padding: 1rem; border-radius: 0.5rem;">
+                        <div style="color: #86efac;">💰 수익: ${fmt(ui.dayResult.income)}</div>
+                        <div style="color: #fca5a5;">💸 비용: ${fmt(ui.dayResult.cost)}</div>
+                        <div class="font-bold" style="color: ${ui.dayResult.netIncome >= 0 ? '#86efac' : '#fca5a5'};">순이익: ${fmt(ui.dayResult.netIncome)}</div>
+                    </div>` : ''}
+                    <div class="mb-3" style="background: #f3f4f6; padding: 1rem; border-radius: 0.5rem;">
+                        <div class="flex justify-between items-center mb-2">
+                            <label class="font-bold">💰 수신 이자율</label>
+                            <span id="deposit-slider-value" class="font-bold" style="color: #2563eb;">${game.depositRate}%</span>
+                        </div>
+                        <input type="range" id="deposit-slider" min="1" max="5" step="0.1" value="${game.depositRate}" class="slider" onchange="updateSlider('deposit-slider', 'depositRate')"/>
+                    </div>
+                    <div class="mb-3" style="background: #f3f4f6; padding: 1rem; border-radius: 0.5rem;">
+                        <div class="flex justify-between items-center mb-2">
+                            <label class="font-bold">💸 여신 이자율</label>
+                            <span id="loan-slider-value" class="font-bold" style="color: #16a34a;">${game.loanRate}%</span>
+                        </div>
+                        <input type="range" id="loan-slider" min="3" max="10" step="0.1" value="${game.loanRate}" class="slider" onchange="updateSlider('loan-slider', 'loanRate')"/>
+                    </div>
+                    <button onclick="processDay()" class="btn w-full">🌅 다음 날 영업 시작</button>
+                </div>
+            </div>`);
+        }
+
+        if (ui.showInput) {
+            app.insertAdjacentHTML('beforeend', `<div class="modal">
+                <div class="modal-content">
+                    <h3 class="text-lg font-bold mb-3">${ui.inputLabel} 직접 입력</h3>
+                    <input type="number" id="modal-input" value="${ui.inputValue}" class="input mb-3" onchange="ui.inputValue = this.value"/>
+                    <div class="flex gap-2">
+                        <button onclick="closeInput()" class="btn btn-secondary w-full">취소</button>
+                        <button onclick="applyInput()" class="btn w-full">적용</button>
+                    </div>
+                </div>
+            </div>`);
+        }
+
+        updateTime(); updateCustomers();
+    }
+
+    document.addEventListener('DOMContentLoaded', render);
+</script>
+```
+
+</body>
+</html>
